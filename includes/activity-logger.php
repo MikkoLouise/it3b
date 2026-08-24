@@ -1,5 +1,5 @@
 <?php
-   function logActivity($pdo,$user_id,$email,$action,$status= 'success'){
+   function logActivity($pdo,$user_id,$user_email,$action,$status= 'success'){
     try{
         //Get Client IP Address
         $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'Unknown' ;
@@ -23,6 +23,18 @@
              activity_log_user_agent
           ) VALUES (?,?,?,?,?,?)
      ");
+
+     $success = $stmt->execute([
+        $user_id,
+        $user_email,
+        $action,
+        $status,
+        $ip,
+        $user_agent
+     ]);
+
+     return $success;
+     
 
 
     }catch(PDOException $e){
