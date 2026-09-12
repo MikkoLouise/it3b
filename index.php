@@ -2,51 +2,53 @@
 require_once 'config/config.php';
 require_once 'config/functions.php';
 
-if(isset($_SESSION['user_id'])){
-    header('Location ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+if (isset($_SESSION['user_id'])) {
+    header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
     exit;
 }
 
-$error='';
+$error = '';
 
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $login = trim($_POST['login'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if(loginUser($pdo,$login,$password)){
-        echo 'Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php';
+    if (loginUser($pdo, $login, $password)) {
+
         header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
         exit;
     }
 
-    $error= 'Invalid Login Credentials';
+    $error = 'Invalid Login Credentials';
 }
-
 ?>
 
 <!DOCTYPE html>
-<html lang ="en">
-    <head>
-        <meta charset= "UTF-8">
-        <meta name= "viewport" content= "width=device-width, initial-scale=1.0">
-        <title>Login</title>
-    </head>
-    <body> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
 
-    <form method= "POST">
-        <label>Username or Email</label>
-        <input type="text"
-               name="login"
-               required>
-    <br>
-    <br>
+<body>
+
+<form method="POST">
+
+    <label>Username or Email</label>
+    <input type="text" name="login" required>
+
+    <br><br>
+
     <label>Password</label>
-    <input type="password"
-           name="password"
-           required>
-    <br>
+    <input type="password" name="password" required>
+
+    <br><br>
+
     <button type="submit">Sign In</button>
 
-    </form>
-    </body>
-    </html>
+</form>
+
+</body>
+</html>
