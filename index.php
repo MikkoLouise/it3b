@@ -2,24 +2,37 @@
 require_once 'config/config.php';
 require_once 'config/functions.php';
 
-if(isset($_SESSION['user_id'])){
-    header('Location ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+if (isset($_SESSION['user_id'])) {
+    header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
     exit;
 }
 
-$error='';
+$error = '';
 
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $login = trim($_POST['login'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if(loginUser($pdo,$login,$password)){
+
+    $error = 'Invalid Login Credentials';
+    
+    if($login==='' || $password ===''){
+        //Log incomplete login attempt
+        logActivity($pdo,null,$login,'login','failed');
+
+    }else{
+         
+        if (loginUser($pdo,$login,$password)) {
+//Log complete login attempt
+            logActivity($pdo,$_SESSION['user_id'],$_SESSION['user_email'],'login','success');
         echo 'Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php';
         header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
         exit;
     }
 
-    $error= 'Invalid Login Credentials';
+    }
+
 }
 
 ?>
@@ -40,13 +53,16 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                required>
     <br>
     <br>
+
     <label>Password</label>
     <input type="password"
            name="password"
            required>
     <br>
+
     <button type="submit">Sign In</button>
 
-    </form>
-    </body>
-    </html>
+</form>
+
+</body>
+</html>
