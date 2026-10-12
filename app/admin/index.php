@@ -1,6 +1,6 @@
 <?php
 require '../../config/config.php';
-require '../../config/functions.php';
+
 
 requireRole('admin');
 
@@ -16,7 +16,7 @@ $stmt = $pdo->query("
     SELECT * FROM activity_logs
     ORDER BY activity_log_created_at DESC
 ");
-
+ 
 $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -33,7 +33,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         body {
             font-family: Arial;
-            background: #f4f4f4;
+            background: #c4adad;
             margin: 30px;
         }
 
@@ -44,7 +44,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         a {
-            background: #dc2626;
+            background: #f30101;
             color: white;
             padding: 8px 12px;
             text-decoration: none;
@@ -65,7 +65,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         th {
-            background: #333;
+            background: #2c2828;
             color: white;
         }
 
@@ -80,7 +80,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 
 <div class="header">
-    <h1>Welcome Admin</h1>
+    <h1>Welcome Mikko Admin!</h1>
     <a href="../../auth/signout.php">Sign Out</a>
 </div>
 
@@ -89,7 +89,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <table>
     <thead>
         <tr>
-            <p class="h1">Mikko</p>
+
             <th>ID</th>
             <th>User</th>
             <th>Email</th>
@@ -98,6 +98,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>IP</th>
             <th>User Agent</th>
             <th>Date</th>
+            
         </tr>
     </thead>
 
