@@ -16,7 +16,7 @@ $stmt = $pdo->query("
     SELECT * FROM activity_logs
     ORDER BY activity_log_created_at DESC
 ");
-
+ 
 $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -98,6 +98,7 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>IP</th>
             <th>User Agent</th>
             <th>Date</th>
+            
         </tr>
     </thead>
 
