@@ -1,24 +1,51 @@
 <?php
-require '../../config/config.php';
 
+require '../../config/config.php';
 
 requireRole('admin');
 
-logActivity(
-    $pdo,
-    $_SESSION['user_id'],
-    $_SESSION['user_email'],
-    'view_activity_logs',
-    'success'
-);
+// Determine current section
+$section = $_GET['section'] ?? 'activity-logs';
 
-$stmt = $pdo->query("
-    SELECT * FROM activity_logs
-    ORDER BY activity_log_created_at DESC
-");
- 
-$activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Determine CRUD Operation
+$action = $_GET['action'] ?? '';
+
+// Fetch data based on current section
+if ($section === 'activity-logs') {
+
+    // Activity Logs Query
+    $stmt = $pdo->query("
+        SELECT *
+        FROM activity_logs
+        ORDER BY activity_log_created_at DESC
+    ");
+
+    $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} elseif ($section === 'user-sessions') {
+
+    // User Sessions Query
+    $stmt = $pdo->query("
+        SELECT
+            us.session_id,
+            us.user_id,
+            u.user_username,
+            u.user_email,
+            u.user_role,
+            us.session_start,
+            us.session_end,
+            us.session_duration
+        FROM user_sessions us
+        INNER JOIN users u
+            ON us.user_id = u.user_id
+        ORDER BY us.session_start DESC
+    ");
+
+    $sessions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -84,7 +111,16 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <a href="../../auth/signout.php">Sign Out</a>
 </div>
 
-<h2>Activity Logs</h2>
+<nav>
+        <a href="index.php?section=activity-logs">Activity Logs</a>
+        <a href="index.php?section=user-sessions">User Sessions</a>
+        
+    </nav>
+
+    <?php if ($section === 'activity-logs'): ?>
+
+
+<h1>Activity Logs</h1>
 
 <table>
     <thead>
@@ -114,9 +150,108 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?= htmlspecialchars($activity['activity_log_user_agent']) ?></td>
                 <td><?= htmlspecialchars($activity['activity_log_created_at']) ?></td>
             </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
 
+                <?php endforeach; ?>
+
+            </tbody>
+
+        </table>
+
+    <?php endif; ?>
+
+        <?php if ($section === 'user-sessions'): ?>
+
+        <h1>User Sessions</h1>
+
+        <table id="sessionTable" border="1" cellpadding="5" cellspacing="0">
+
+            <thead>
+                <tr>
+                    <th>Session ID</th>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Session Start</th>
+                    <th>Session End</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <?php foreach ($sessions as $session): ?>
+
+                    <tr>
+
+                        <td>
+                            <?= htmlspecialchars($session['session_id']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['user_id']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['user_username']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['user_email']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['user_role']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($session['session_start']) ?>
+                        </td>
+
+                        <td>
+                            <?= $session['session_end']
+                                ? htmlspecialchars($session['session_end'])
+                                : 'Active'
+                            ?>
+                        </td>
+
+                        <td>
+
+                            <?php
+
+                            if ($session['session_duration'] !== null) {
+
+                                $seconds = (int) $session['session_duration'];
+
+                                $hours = floor($seconds / 3600);
+                                $minutes = floor(($seconds % 3600) / 60);
+                                $seconds = $seconds % 60;
+
+                                echo sprintf(
+                                    '%02d hr %02d min %02d sec',
+                                    $hours,
+                                    $minutes,
+                                    $seconds
+                                );
+
+                            } else {
+
+                                echo 'Active';
+
+                            }
+
+                            ?>
+
+                        </td>
+
+                    </tr>
+
+                <?php endforeach; ?>
+
+            </tbody>
+
+        </table>
+
+    <?php endif; ?>
 </body>
 </html>
